@@ -1,0 +1,41 @@
+# Имя нашего процесса автоматизации
+name: Build and Deploy Streamlit App
+
+# Триггер: запускать при каждом push в ветку main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    # Название задачи
+    name: Build and Push to DockerHub
+    # Запускать на виртуальной машине с Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Скачиваем код из нашего репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Шаг 2: Логинимся в Docker Hub, используя наши секреты
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Шаг 3: Собираем и публикуем Docker-образ
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          # Контекст сборки - папка 'app'
+          context: ./app
+          # Явно указываем путь к Dockerfile
+          file: ./app/Dockerfile
+          # Говорим, что образ нужно публиковать
+          push: true
+          # Теги для образа. Мы будем использовать два: 'latest' и уникальный по хешу коммита
+          tags: |
+            alekseyrepin/streamlit-app:latest
+            alekseyrepin/streamlit-app:${{ github.sha }}
