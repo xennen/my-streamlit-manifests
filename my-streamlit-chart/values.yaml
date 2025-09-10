@@ -1,0 +1,35 @@
+# values.yaml
+
+# replicaCount: Количество копий (подов) вашего приложения, которое будет запущено.
+replicaCount: 1
+
+# image: Информация о Docker-образе, который нужно использовать.
+image:
+  # repository: Имя вашего образа на Docker Hub.
+  repository: alekseyrepin/streamlit-app
+  # tag: Версия образа. 'latest' означает, что будет использоваться последняя опубликованная версия.
+  tag: latest
+
+# containerPort: Порт, который слушает ваше приложение ВНУТРИ контейнера.
+# Должен совпадать с тем, что указано в EXPOSE в вашем Dockerfile.
+containerPort: 8501
+
+# service: Настройки для внутреннего сервиса Kubernetes.
+service:
+  # port: Порт, который сервис будет "открывать" внутри кластера.
+  # Ingress будет обращаться именно к этому порту.
+  port: 80
+
+# ingress: Настройки для Ingress, который делает ваше приложение доступным извне.
+ingress:
+  # enabled: Включен ли Ingress. По умолчанию лучше ставить 'false',
+  # чтобы случайно не "открыть" приложение наружу.
+  # Мы будем включать его через Argo CD для прода.
+  enabled: false
+  
+  # className: Имя класса Ingress Controller'а. 'nginx' - стандарт для ingress-nginx.
+  className: "nginx"
+  
+  # host: Доменное имя по умолчанию.
+  # Это значение будет использоваться, если мы не переопределим его в Argo CD.
+  host: "streamlit.local"
