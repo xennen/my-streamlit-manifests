@@ -1,21 +1,22 @@
 # Используем базовый образ Python
 FROM python:3.9-slim
 
-# Создаем рабочего пользователя
-RUN useradd -ms /bin/bash appuser
-USER appuser
-WORKDIR /home/appuser
+# Устанавливаем рабочую директорию
+WORKDIR /app
 
-# Устанавливаем зависимости
+# Копируем сначала файл с зависимостями (лучшая практика)
+# В нашем случае зависимость одна - streamlit, поэтому этот шаг пока пропустим
+# COPY requirements.txt .
+# RUN pip install -r requirements.txt
+
+# Устанавливаем Streamlit напрямую
 RUN pip install streamlit
 
-# КОПИРУЕМ ВАШ КОД ВНУТРЬ ОБРАЗА
-# Копируем файл streamlit_app.py из текущей папки (где лежит Dockerfile)
-# в рабочую директорию (/home/appuser) внутри контейнера.
-COPY streamlit_app.py .
+# Копируем ВЕСЬ контент из папки, где лежит Dockerfile, в рабочую директорию /app
+COPY . .
 
-# Открываем порт, на котором работает Streamlit
+# Открываем порт
 EXPOSE 8501
 
-# Команда для запуска вашего приложения
+# Команда для запуска. Теперь мы точно знаем, что streamlit_app.py лежит в /app
 CMD ["streamlit", "run", "streamlit_app.py"]
